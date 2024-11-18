@@ -7,7 +7,7 @@ import { useThemeContext } from '../contexts/themeContext';
 import { useUserContext } from '../contexts/userContext';
 import { usePopUpContext } from '../contexts/popUpContext';
 import AccountPopUp from './AccountPopUp';
-import LoginPopUp from './LoginPopup';
+import LoginPopUp from './LoginPopUp';
 
 
 function Header({ toggleSidebar }) {
