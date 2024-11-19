@@ -116,12 +116,13 @@ const loginUser = asyncHandler(async (req, res) => {
     const options = {
         httpOnly: true,
         secure: true,
-        sameSite: 'None',
+        sameSite: 'Strict',
     }
 
     // console.log({accessToken, refreshToken});
     return res
     .status(200)
+    .cookie("check", "check", options)
     .cookie("accessToken", accessToken, options)
     .cookie("refreshToken", refreshToken, options)
     .json(
