@@ -33,11 +33,11 @@ function App() {
       credentials: 'include'
     }
 
-    fetch(url2)
+    fetch(url2, options)
       .then((res) => res.json())
       .catch((err) => console.log('2', err))
 
-    fetch(url1)
+    fetch(url1, options)
       .then((res) => res.json())
       .then((res) => {
         if (res?.data)

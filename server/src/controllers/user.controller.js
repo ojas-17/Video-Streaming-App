@@ -123,7 +123,6 @@ const loginUser = asyncHandler(async (req, res) => {
     // console.log({accessToken, refreshToken});
     return res
     .status(200)
-    .cookie("check", "check", options)
     .cookie("accessToken", accessToken, options)
     .cookie("refreshToken", refreshToken, options)
     .json(

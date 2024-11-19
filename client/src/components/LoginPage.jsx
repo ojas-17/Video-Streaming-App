@@ -25,7 +25,8 @@ function LoginPage() {
       headers: {
         'Content-Type': 'application/json', // Set the content type to JSON
       },
-      body: JSON.stringify(data)
+      body: JSON.stringify(data),
+      credentials: 'include'
     }
     
     fetch(url, options)
