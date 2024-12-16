@@ -7,7 +7,7 @@ import VideoPage from './components/VideoPage.jsx'
 import SearchPage from './components/SearchPage.jsx'
 import ChannelPage from './components/ChannelPage.jsx'
 import LoginPage from './components/LoginPage.jsx'
-import SignUpPage from './components/SignUpPage.jsx'
+import SignUpPage1 from './components/SignUpPage1.jsx'
 import TrendingPage from './components/TrendingPage.jsx'
 import HistoryPage from './components/HistoryPage.jsx'
 import SubscriptionsPage from './components/SubscriptionsPage.jsx'
@@ -78,7 +78,7 @@ const router = createBrowserRouter([
   },
   {
     path: '/signup',
-    element: <SignUpPage />
+    element: <SignUpPage1 />
   }
 ])
 
