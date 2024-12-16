@@ -17,14 +17,14 @@ function VideoCard2({video}) {
     <div className='w-full flex flex-wrap gap-2 xl:gap-5 text-lg'>
         <Link className='w-full xl:w-1/2 relative' to={`/watch/${video._id}`}>
             <div className='z-10 relative'>
-                <img className='w-full rounded-xl transition-transform duration-200 hover:translate-x-1 hover:-translate-y-1 ' src={video.thumbnail} alt="" />
+                <img className='w-full rounded-xl object-cover transition-transform duration-200 hover:translate-x-1 hover:-translate-y-1 ' src={video.thumbnail} alt="" />
             </div>
             <div className='absolute z-0 top-0 left-0 w-full rounded-xl bg-purple-800' style={{aspectRatio: 16/9}}></div>
         </Link>
 
         <div className=' flex flex-col gap-1 pt-0 '>
             <div className='text-2xl md:text-2xl'>
-                <Link className='transition-colors duration-150 hover:text-purple-600' to={`/watch/${video._id}`}>
+                <Link className='transition-colors duration-150 ' to={`/watch/${video._id}`}>
                     {video.title}
                 </Link>
             </div>
@@ -38,7 +38,7 @@ function VideoCard2({video}) {
             <div >
                 <Link className='flex items-center gap-2 lg:gap-3' to={`/channel/${video?.owner?.username}`} >
                     <div>
-                        <img className='w-4 sm:w-6 lg:w-8 rounded-full object-cover border-2 border-purple-800' style={{aspectRatio: 1/1}} src={video.owner.avatar} alt="" />
+                        <img className='w-6 lg:w-8 rounded-full object-cover border-2 border-purple-800' style={{aspectRatio: 1/1}} src={video.owner.avatar} alt="" />
                     </div>
                     <div className=' transition-colors duration-150 hover:text-purple-600'>
                         {video.owner.username}

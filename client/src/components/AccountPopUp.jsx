@@ -13,8 +13,20 @@ function AccountPopUp() {
     const { theme } = useThemeContext()
     const { setUser } = useUserContext()
 
+    const logoutUser = async () => {
+        const url = `${import.meta.env.VITE_BACKEND_URL}/users/logout`
+        const options = {
+            method: 'POST',
+            credentials: 'include'
+        }
+
+        fetch(url, options)
+        .then((res) => res.json())
+        .catch((err) => console.log(err))
+    }
+
     if (account) return (
-        <div className={`z-30 right-0 fixed w-1/5 px-3 py-3 rounded-lg flex flex-col ${theme === 'light' ? 'bg-neutral-300' : 'bg-neutral-900'} mx-5 text-xl`}>
+        <div className={`z-30 right-0 fixed w-1/2 sm:w-1/3 lg:w-1/5 px-3 py-3 rounded-lg flex flex-col ${theme === 'light' ? 'bg-neutral-300' : 'bg-neutral-900'} mx-5 text-xl`}>
             <Link to='/account'>
                 <ProfileMenuCard>
                     <FontAwesomeIcon icon={faUser} />
@@ -23,6 +35,7 @@ function AccountPopUp() {
             </Link>
             <ProfileMenuCard onClick={() => {
                 setUser({})
+                logoutUser()
                 console.log('Logged out')
             }}>
                 <FontAwesomeIcon icon={faRightFromBracket} />

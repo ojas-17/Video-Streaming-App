@@ -7,7 +7,7 @@ const LikeCard = ({likeEl}) => {
     return (
         <Link className='flex items-center gap-3' to={`/channel/${likeEl.likedBy.username}`}>
         {/* <Link className='flex items-center gap-3' to={``}> */}
-            <img className='aspect-[1/1] w-10 rounded-full' src={likeEl.likedBy.avatar} />
+            <img className='aspect-[1/1] object-cover w-10 rounded-full' src={likeEl.likedBy.avatar} />
             <div>{likeEl.likedBy.username}</div>
             {/* <div>{likeEl}</div> */}
         </Link>

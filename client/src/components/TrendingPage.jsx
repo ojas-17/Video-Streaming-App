@@ -4,11 +4,13 @@ import VideoCard1 from './VideoCard1'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faFilter } from '@fortawesome/free-solid-svg-icons';
 import { useThemeContext } from '../contexts/themeContext';
+import { useLoadingContext } from '../contexts/loadingContext';
 
 function TrendingPage() {
   const location = useLocation()
 
   const {theme} = useThemeContext()
+  const { loading, setLoading } = useLoadingContext()
   
   let query = ''
   const [videos, setVideos] = useState([])
@@ -21,11 +23,12 @@ function TrendingPage() {
   }
 
   const getVideo = async (query, sortBy, sortType) => {
+    // setLoading(true)
     const queryParams = new URLSearchParams(location.search)
     // console.log(query)
 
     query = queryParams.get('query')
-    const url = query ? `${import.meta.env.VITE_BACKEND_URL}/video/?title=${query}&sortBy=${sortBy}&sortType=${sortType}` : `${import.meta.env.VITE_BACKEND_URL}/video/`
+    const url = query ? `${import.meta.env.VITE_BACKEND_URL}/video/?title=${query}&sortBy=${sortBy}&sortType=${sortType}` : `${import.meta.env.VITE_BACKEND_URL}/video/?sortBy=views`
 
     // console.log(query)
     // console.log(sortBy)
@@ -42,9 +45,11 @@ function TrendingPage() {
         console.log(error)
         setVideos([])
       })
+      .finally(() => setLoading(false))
   }
 
   useEffect(() => {
+    setLoading(true)
     const queryParams = new URLSearchParams(location.search)
     query = queryParams.get('query')
     setSortBy('createdAt')
@@ -57,13 +62,13 @@ function TrendingPage() {
 
 
   return (
-    <div className='relative w-10/12 md:w-4/5 lg:w-2/3 flex flex-col gap-3 md:gap-5 mt-5'>
-      <div className={`w-full flex flex-col gap-5 px-4 py-2 rounded-lg ${filterMenu ? theme === 'light' ? 'bg-neutral-300' : 'bg-neutral-950' : ''} ${filterMenu ? 'h-48' : 'h-8'}`} style={{transition: '0.3s'}}>
+    <div className='relative w-10/12 md:w-4/5 lg:w-2/3 flex flex-col gap-3 md:gap-5 mt-5 mb-14'>
+      <div className={`w-full flex flex-col gap-5 px-4 py-2 rounded-lg ${filterMenu ? theme === 'light' ? 'bg-neutral-300' : 'bg-neutral-950' : ''} `} style={{transition: '0.3s'}}>
         <span className='text-2xl'>Trending Videos</span>
       </div>
 
       {
-        !videos?.length && (
+        !loading && !videos?.length && (
           <div className='text-3xl w-full flex justify-center mt-10'>
             No videos found
           </div>
@@ -71,7 +76,7 @@ function TrendingPage() {
       }
 
       {
-        videos.map((video) => {
+        !loading && videos.map((video) => {
           return (
             <VideoCard1 video={video} key={video._id} />
           )

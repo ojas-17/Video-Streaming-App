@@ -1,6 +1,6 @@
 import { createContext, useContext } from "react"
 
-const themeContext = createContext()
+const themeContext = createContext({})
 
 export const useThemeContext = () => {
     return useContext(themeContext)

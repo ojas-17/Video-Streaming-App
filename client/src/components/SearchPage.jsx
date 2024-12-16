@@ -4,23 +4,29 @@ import VideoCard1 from './VideoCard1'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faFilter } from '@fortawesome/free-solid-svg-icons';
 import { useThemeContext } from '../contexts/themeContext';
+import { useLoadingContext } from '../contexts/loadingContext';
+import PaginationCard from './PaginationCard';
 
 function SearchPage() {
   const location = useLocation()
 
   const {theme} = useThemeContext()
+  const { loading, setLoading } = useLoadingContext()
   
   let query = ''
   const [videos, setVideos] = useState([])
   const [filterMenu, setFilterMenu] = useState(false)
   const [sortBy, setSortBy] = useState('createdAt')
   const [sortType, setSortType] = useState('desc')
+  const [page, setPage] = useState(1)
 
   const toggleFilterMenu = () => {
     setFilterMenu((prev) => !prev)
   }
 
   const getVideo = async (query, sortBy, sortType) => {
+    setLoading(true)
+
     const queryParams = new URLSearchParams(location.search)
     // console.log(query)
 
@@ -35,13 +41,14 @@ function SearchPage() {
       .then((res) => res.json())
       .then((res) => res.data)
       .then((data) => {
-        setVideos(data.videos)
-        // console.log(data.videos)
+        setVideos(data)
+        // console.log(data)
       })
       .catch((error) => {
         console.log(error)
         setVideos([])
       })
+      .finally(() => setLoading(false))
   }
 
   useEffect(() => {
@@ -57,7 +64,7 @@ function SearchPage() {
 
 
   return (
-    <div className='relative w-10/12 md:w-4/5 lg:w-2/3 flex flex-col gap-3 md:gap-5 mt-5'>
+    <div className='relative w-10/12 md:w-4/5 lg:w-2/3 flex flex-col gap-3 md:gap-5 mt-5 mb-14'>
       <div className={`w-full flex flex-col gap-5 px-4 py-2 rounded-lg ${filterMenu ? theme === 'light' ? 'bg-neutral-300' : 'bg-neutral-950' : ''} ${filterMenu ? 'h-48' : 'h-8'}`} style={{transition: '0.3s'}}>
         <div className='flex justify-between' >
           <span className='text-xl cursor-pointer' onClick={toggleFilterMenu}>Filter <FontAwesomeIcon icon={faFilter} /></span>
@@ -101,7 +108,7 @@ function SearchPage() {
       </div>
 
       {
-        !videos?.length && (
+        !loading && !videos?.videos?.length && (
           <div className='text-3xl w-full flex justify-center mt-10'>
             No videos found
           </div>
@@ -109,11 +116,17 @@ function SearchPage() {
       }
 
       {
-        videos.map((video) => {
+        !loading && videos?.videos?.map((video) => {
           return (
             <VideoCard1 video={video} key={video._id} />
           )
         })
+      }
+
+      {
+        !loading && videos?.videos?.length && (
+          <PaginationCard page={page} setPage={setPage} lastPage={videos?.totalPages} />
+        )
       }
     </div>
   )

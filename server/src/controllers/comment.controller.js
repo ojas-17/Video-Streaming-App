@@ -15,6 +15,7 @@ const postComment = asyncHandler(async (req, res) => {
         throw new ApiError(404, "Video not found");
     }
 
+    // console.log(req.body);
     const {content} = req.body;
     if(!content) {
         throw new ApiError(400, "Comment cannot be empty");
@@ -37,8 +38,8 @@ const postComment = asyncHandler(async (req, res) => {
     }
 
     return res
-    .status(200)
-    .json(new ApiResponse(200, uploadedComment, "Comment uploaded successfully"));
+    .status(201)
+    .json(new ApiResponse(201, uploadedComment, "Comment uploaded successfully"));
 });
 
 const getComments = asyncHandler(async (req, res) => {

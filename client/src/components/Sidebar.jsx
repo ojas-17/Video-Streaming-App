@@ -2,6 +2,8 @@ import React from 'react'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faBars, faClockRotateLeft, faFire, faGear, faHome, faRectangleList, faUsersRectangle } from '@fortawesome/free-solid-svg-icons';
 import { faCircleQuestion, faMessage } from '@fortawesome/free-regular-svg-icons';
+import { BsCollectionPlay } from "react-icons/bs";
+import { FaRegRectangleList } from "react-icons/fa6";
 import { useThemeContext } from '../contexts/themeContext';
 import { Link, NavLink } from 'react-router-dom';
 import SidebarMenuCard from './SidebarMenuCard';
@@ -42,12 +44,17 @@ function Sidebar({ sidebar, toggleSidebar }) {
           <FontAwesomeIcon icon={faClockRotateLeft} />
           <span>History</span>
         </SidebarMenuCard>
+        <SidebarMenuCard to='/liked-videos'>
+          <BsCollectionPlay size='23'/>
+          <span>Liked Videos</span>
+        </SidebarMenuCard>
         <SidebarMenuCard to='/subscriptions'>
           <FontAwesomeIcon icon={faUsersRectangle} />
           <span>Subscriptions</span>
         </SidebarMenuCard>
         <SidebarMenuCard to={`${user?.username ? `/channel/${user.username}` : '/login'}`}>
-          <FontAwesomeIcon icon={faRectangleList} />
+          {/* <FontAwesomeIcon icon={faRectangleList} /> */}
+          <FaRegRectangleList size='24'/>
           <span>Your Channel</span>
         </SidebarMenuCard>
 

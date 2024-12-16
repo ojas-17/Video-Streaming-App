@@ -14,7 +14,7 @@ const toggleLike = asyncHandler(async (req, res) => {
     }
 
     const likeData = {
-        likedBy: req.user._id
+        likedBy: req.user._id.toString()
     }
 
     if(videoId) {
@@ -45,27 +45,32 @@ const toggleLike = asyncHandler(async (req, res) => {
     // console.log(likeData);
     const existingLike = await Like.find(likeData);
     // console.log(existingLike);
+    let statusCode;
     let like;
     let msg;
     if(existingLike?.length) {
         // console.log(existingLike[0]._id);
-        like = await Like.deleteOne(existingLike[0]._id);
+        like = await Like.deleteOne({_id: existingLike[0]._id});
+        // console.log(like);
         if(!like) {
             throw new ApiError(500, "Something went wrong while deleting like");
         }
         msg = "Like deleted successfully";
+        statusCode = 204
     } else{
         like = await Like.create(likeData);
+        // console.log(like);
         if(!like) {
             throw new ApiError(500, "Something went wrong while creating like");
         }
 
         msg = "Like posted successfully";
+        statusCode = 201
     }
     
     return res
-    .status(200)
-    .json(new ApiResponse(200, like, msg));
+    .status(statusCode)
+    .json(new ApiResponse(statusCode, like, msg));
 });
 
 const getLikes = asyncHandler(async (req, res) => {
@@ -155,13 +160,14 @@ const getLikes = asyncHandler(async (req, res) => {
         throw new ApiError(500, "Something went wrong while fetching likes");
     }
 
-    likeData.likedBy = userId;
-    let isLiked = await Like.findOne(likeData);
-    isLiked = isLiked ? true : false;
-    // console.log(isLiked);
-
     const totalLikes = await Like.countDocuments(likeData)
     const totalPages = Math.ceil(totalLikes / limit);
+
+    likeData.likedBy = userId;
+    let isLiked = await Like.findOne(likeData);
+    // console.log(likeData);
+    isLiked = isLiked ? true : false;
+    // console.log(isLiked);
     
     return res
     .status(200)
@@ -181,6 +187,10 @@ const getLikes = asyncHandler(async (req, res) => {
 
 const getLikedVideos = asyncHandler(async (req, res) => {
     const userId = req.user?._id;
+    const page = req.query?.page || 1;
+    const limit = req.query?.limit || 10;
+    const skip = (page-1) * limit;
+
     const videos = await Like.aggregate([
         {
             $match: {
@@ -222,6 +232,8 @@ const getLikedVideos = asyncHandler(async (req, res) => {
                         $project: {
                             title: 1,
                             thumbnail: 1,
+                            views: 1,
+                            createdAt: 1,
                             owner: 1
                         }
                     }
@@ -234,15 +246,41 @@ const getLikedVideos = asyncHandler(async (req, res) => {
                     $first: "$video"
                 }
             }
+        },
+        {
+            $sort: {
+                createdAt: -1
+            }
+        },
+        {
+            $skip: skip
+        },
+        {
+            $limit: limit
         }
     ]);
     if(!videos) {
         throw new ApiError(500, "Something went wrong while fetching liked videos");
     }
 
+    const totalVideos = await Like.countDocuments({
+        likedBy: new mongoose.Types.ObjectId(req?.user?._id),
+        video: {$exists: true}
+    })
+    const totalPages = Math.ceil(totalVideos / limit);
+
     return res
     .status(200)
-    .json(new ApiResponse(200, videos, "Liked videos fetched successfully"));
+    .json(new ApiResponse(
+        200,
+        {
+            videos,
+            totalVideos,
+            totalPages,
+            currentPage: page
+        },
+        "Liked videos fetched successfully"
+    ));
 });
 
 export {

@@ -7,7 +7,7 @@ import VideoPage from './components/VideoPage.jsx'
 import SearchPage from './components/SearchPage.jsx'
 import ChannelPage from './components/ChannelPage.jsx'
 import LoginPage from './components/LoginPage.jsx'
-import SignupPage from './components/SignupPage.jsx'
+import SignUpPage from './components/SignUpPage.jsx'
 import TrendingPage from './components/TrendingPage.jsx'
 import HistoryPage from './components/HistoryPage.jsx'
 import SubscriptionsPage from './components/SubscriptionsPage.jsx'
@@ -16,7 +16,10 @@ import NotAvailablePage from './components/NotAvailablePage.jsx'
 import { ThemeProvider } from './contexts/themeContext';
 import { UserProvider } from './contexts/userContext';
 import { PopUpProvider } from './contexts/popUpContext.js'
+import { LoadingProvider } from './contexts/loadingContext.js'
 import HomePage from './components/HomePage.jsx'
+import LikedVideosPage from './components/LikedVideosPage.jsx'
+import UploadPage from './components/UploadPage.jsx'
 
 const router = createBrowserRouter([
   {
@@ -52,8 +55,16 @@ const router = createBrowserRouter([
         element: <SubscriptionsPage />
       },
       {
+        path: 'liked-videos',
+        element:<LikedVideosPage />
+      },
+      {
         path: 'account',
         element: <AccountPage />
+      },
+      {
+        path: '/upload',
+        element: <UploadPage />
       },
       {
         path: 'error',
@@ -67,14 +78,17 @@ const router = createBrowserRouter([
   },
   {
     path: '/signup',
-    element: <SignupPage />
+    element: <SignUpPage />
   }
 ])
 
 const Root = () => {
   const [theme, setTheme] = useState('dark');
   const [user, setUser] = useState({});
-  const [prevPage, setPrevPage] = useState('')
+  const [prevPage, setPrevPage] = useState('/')
+  const [loading, setLoading] = useState(false)
+  const [errorMsg, setErrorMsg] = useState('')
+  const [msg, setMsg] = useState('')
   const [account, setAccount] = useState(false)
   const [loginPopUp, setLoginPopUp] = useState(false)
   const [like, setLike] = useState(false)
@@ -83,7 +97,9 @@ const Root = () => {
     <ThemeProvider value={{ theme, setTheme }}>
       <UserProvider value={{ user, setUser, prevPage, setPrevPage }}>
         <PopUpProvider value={{ account, setAccount, like, setLike, loginPopUp, setLoginPopUp }}>
-          <RouterProvider router={router} />
+          <LoadingProvider value={{ loading, setLoading, errorMsg, setErrorMsg, msg, setMsg }}>
+           <RouterProvider router={router} />
+          </LoadingProvider>
         </PopUpProvider>
       </UserProvider>
     </ThemeProvider>

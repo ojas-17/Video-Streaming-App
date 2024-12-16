@@ -57,8 +57,80 @@ const toggleSubscription = asyncHandler(async (req, res) => {
     return res
     .status(200)
     .json(new ApiResponse(statusCode, {subscription: subscription2}, msg));
-})
+});
+
+const getSubscritions = asyncHandler(async (req, res) => {
+    const page = parseInt(req.query?.page) || 1;
+    const limit = parseInt(req.query?.limit) || 10;
+    const skip = (page-1) * limit;
+
+    const subscriptions = await Subscription.aggregate([
+        {
+            $match: {
+                subscriber: new mongoose.Types.ObjectId(req.user._id)
+            }
+        },
+        {
+            $lookup: {
+                from: "users",
+                localField: "channel",
+                foreignField: "_id",
+                as: "channel",
+                pipeline: [
+                    {
+                        $project: {
+                            username: 1,
+                            avatar: 1
+                        }
+                    }
+                ]
+            }
+        },
+        {
+            $addFields: {
+                channel: {
+                    $first: "$channel"
+                }
+            }
+        },
+        {
+            $sort: {
+                createdAt: -1
+            }
+        },
+        {
+            $skip: skip
+        },
+        {
+            $limit: limit
+        }
+    ]);
+    if(!subscriptions) {
+        throw new ApiError(500, "Something went wrong while fetching subscriptions")
+    }
+
+    const totalSubscriptions = await Subscription.countDocuments({
+        subscriber: req.user._id
+    });
+    const totalPages = Math.ceil(totalSubscriptions / limit);
+
+    return res
+    .status(200)
+    .json(
+        new ApiResponse(
+            200,
+            {
+                subscriptions,
+                totalSubscriptions,
+                totalPages,
+                currentPage: page
+            },
+            "Subscriptions fetched successfully"
+        )
+    );
+});
 
 export {
-    toggleSubscription
+    toggleSubscription,
+    getSubscritions
 }

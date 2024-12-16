@@ -104,8 +104,7 @@ $slider-bg-color: lighten($primary-background-color, 33%);
 /* The slider bar color is used for the progress bar and the volume bar
    (the first two can be removed after a fix that's coming) */
 .video-js .vjs-volume-level,
-.video-js .vjs-play-progress,
-.video-js .vjs-slider-bar {
+.video-js .vjs-play-progress{
   background: #9f44b4;
 }
 

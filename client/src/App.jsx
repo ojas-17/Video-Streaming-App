@@ -58,9 +58,9 @@ function App() {
       }
 
       <Header toggleSidebar={toggleSidebar} />
-      {/* <h1 className='text-5xl pt-10'>Video</h1> */}
+      
       <Outlet />
-      {/* <VideoPage  closeSidebar={closeSidebar}/> */}
+
     </div>
   )
 }

@@ -4,8 +4,10 @@ import {ApiError} from '../utils/ApiError.js';
 import {ApiResponse} from '../utils/ApiResponse.js'
 import {Video} from '../models/video.model.js';
 import {User} from '../models/user.model.js';
+import {Like} from '../models/like.model.js';
 import {Comment} from '../models/comment.model.js';
 import {uploadOnCloudinary} from '../utils/cloudinary.js';
+import jwt from 'jsonwebtoken'
 
 const uploadVideo = asyncHandler(async (req, res) => {
     const {title, description} = req.body;
@@ -91,49 +93,114 @@ const searchVideo = asyncHandler(async (req, res) => {
     }
     // console.log(searchCriteria);
 
-    const videos = await Video.aggregate([
-        {
-            $match:{
-                $or: searchCriteria
-            }
-        },
-        {
-            $lookup: {
-                from: "users",
-                localField: "owner",
-                foreignField: "_id",
-                as: "owner",
-                pipeline: [
-                    {
-                        $project: {
-                            username: 1,
-                            avatar: 1
+    let videos;
+    if(videoId) {
+        const video = await Video.aggregate([
+            {
+                $match: {
+                    _id: new mongoose.Types.ObjectId(videoId)
+                }
+            },
+            {
+                $lookup: {
+                    from: "users",
+                    localField: "owner",
+                    foreignField: "_id",
+                    as: "owner",
+                    pipeline: [
+                        {
+                            $project: {
+                                username: 1,
+                                avatar: 1
+                            }
                         }
+                    ]
+                }
+            },
+            {
+                $addFields: {
+                    owner: {
+                        $first: "$owner"
+                    },
+                    views: {
+                        $add: ["$views", 1]
                     }
-                ]
-            }
-        },
-        {
-            $addFields: {
-                owner: {
-                    $first: "$owner"
                 }
             }
-        },
-        {
-            $sort: {
-                [sortBy]: sortType
-            }
-        },
-        {
-            $skip: skip
-        },
-        {
-            $limit: limit
+        ]);
+        if(!video) {
+            throw new ApiError(404, "Video not found");
         }
-    ]);
-    if(!videos) {
-        throw new ApiError(404, "No video found");
+
+        await Video.findByIdAndUpdate(videoId, {
+            $inc: {
+                views: 1
+            }
+        });
+
+        if(req?.cookies?.accessToken) {
+            const token = req.cookies?.accessToken;
+            const decodedToken = jwt.verify(token, process.env.ACCESS_TOKEN_SECRET);
+            // console.log(decodedToken);
+            const user = await User.findByIdAndUpdate({_id: decodedToken?._id}, {
+                $push: {
+                    watchHistory: videoId
+                }
+            });
+            console.log(user);
+        }
+
+        return res
+        .status(200)
+        .json(
+            new ApiResponse(200, video, "Videos fetched successfully")
+        );
+    }
+    else {
+        videos = await Video.aggregate([
+            {
+                $match:{
+                    $or: searchCriteria
+                }
+            },
+            {
+                $lookup: {
+                    from: "users",
+                    localField: "owner",
+                    foreignField: "_id",
+                    as: "owner",
+                    pipeline: [
+                        {
+                            $project: {
+                                username: 1,
+                                avatar: 1
+                            }
+                        }
+                    ]
+                }
+            },
+            {
+                $addFields: {
+                    owner: {
+                        $first: "$owner"
+                    }
+                }
+            },
+            {
+                $sort: {
+                    [sortBy]: sortType
+                }
+            },
+            {
+                $skip: skip
+            },
+            {
+                $limit: limit
+            }
+        ]);
+        if(!videos) {
+            throw new ApiError(404, "No video found");
+        }
     }
 
     const totalVideos = await Video.countDocuments({
@@ -216,7 +283,15 @@ const deleteVideo = asyncHandler(async (req, res) => {
         throw new ApiError(404, "Video not found");
     }
 
+    const likes = await Like.deleteMany({video: new mongoose.Types.ObjectId(videoId)});
+    if(!likes) {
+        throw new ApiError(500, "Error while deleting likes of video");
+    }
+    
     const comments = await Comment.deleteMany({video: new mongoose.Types.ObjectId(videoId)});
+    if(!comments) {
+        throw new ApiError(500, "Error while deleting comments of video");
+    }
     // console.log(comments);
 
     const deletedVideo = await Video.deleteOne({_id: videoId});
