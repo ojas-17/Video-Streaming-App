@@ -5,10 +5,13 @@ import VideoPage from './components/VideoPage';
 import { Outlet } from 'react-router-dom'
 import { useThemeContext } from './contexts/themeContext';
 import { useUserContext } from './contexts/userContext';
+import { useLoadingContext } from './contexts/loadingContext';
 
 function App() {
 
   const [sidebar, setSidebar] = useState(false)
+  
+  const {setLoading} = useLoadingContext()
 
   const toggleSidebar = () => {
     setSidebar((prev) => !prev)
@@ -23,6 +26,9 @@ function App() {
   const { setUser } = useUserContext()
 
   useEffect(() => {
+    console.log('true')
+    setLoading(true)
+
     const url1 = `${import.meta.env.VITE_BACKEND_URL}/users/current-user`
     const url2 = `${import.meta.env.VITE_BACKEND_URL}/users/refresh-token`
     const options = {
@@ -44,6 +50,9 @@ function App() {
           setUser(res.data)
       })
       .catch((err) => console.log('1', err))
+    
+    console.log('false')
+    setLoading(false)
 
   }, [])
 

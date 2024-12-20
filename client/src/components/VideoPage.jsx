@@ -269,6 +269,7 @@ function VideoPage() {
                                     <div className='text-xs cursor-pointer transition-colors duration-150 hover:text-purple-500' onClick={() => {
                                         setVideoId2(videoId)
                                         setLike(true)
+                                        
                                     }}>
                                         View Likes
                                     </div>

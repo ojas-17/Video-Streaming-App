@@ -296,7 +296,9 @@ function ChannelPage() {
     }, [userChannel, sortBy, page])
 
     if (loading) return (
-        <div></div>
+        <div>
+            
+        </div>
     )
 
     return (

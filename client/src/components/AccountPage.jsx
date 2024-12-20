@@ -5,11 +5,16 @@ import AccountPageMenuItem from './AccountPageMenuItem';
 import { useLoadingContext } from '../contexts/loadingContext';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faPenToSquare } from '@fortawesome/free-solid-svg-icons';
+import { useNavigate } from 'react-router-dom';
+import { usePopUpContext } from '../contexts/popUpContext';
 
 function AccountPage() {
 	const { user, setUser } = useUserContext()
 	const { theme } = useThemeContext()
-	const { setLoading, setMsg, setErrorMsg } = useLoadingContext()
+	const { loading, setLoading, setMsg, setErrorMsg } = useLoadingContext()
+	const { setLoginPopUp } = usePopUpContext()
+
+	const navigate = useNavigate()
 
 	const [username, setUsername] = useState('')
 	const [fullName, setFullName] = useState('')
@@ -211,10 +216,14 @@ function AccountPage() {
 			setUsername(user.username)
 			setFullName(user.fullName)
 		}
+		else {
+			setLoginPopUp(true)
+		}
+
 	}, [user])
 
 
-	if (!user) {
+	if (!user?._id) {
 		return (
 			<div>
 

@@ -1,10 +1,14 @@
 import React, { useEffect, useState } from 'react'
 import { useLoadingContext } from '../contexts/loadingContext'
+import { useUserContext } from '../contexts/userContext'
+import { usePopUpContext } from '../contexts/popUpContext';
 import SubscriptionsCard from './SubscriptionsCard'
 import PaginationCard from './PaginationCard'
 
 function SubscriptionsPage() {
+  const {user} = useUserContext()
   const { loading, setLoading } = useLoadingContext()
+  const {setLoginPopUp} = usePopUpContext()
 
   const [subscriptions, setSubscriptions] = useState([])
   const [page, setPage] = useState(1)
@@ -22,6 +26,9 @@ function SubscriptionsPage() {
           setSubscriptions(res.data)
           console.log(res.data)
         }
+        else {
+          setLoginPopUp(true)
+        }
       })
       .catch((err) => console.log(err))
       .finally(() => setLoading(false))
@@ -35,6 +42,14 @@ function SubscriptionsPage() {
   useEffect(() => {
     getSubscriptions()
   }, [page])
+
+  if(!user?._id) {
+    return (
+      <div>
+        
+      </div>
+    )
+  }
 
   return (
     <div className='relative w-10/12 md:w-2/3 lg:w-1/2 flex flex-col gap-3 md:gap-5 mt-5 mb-14'>

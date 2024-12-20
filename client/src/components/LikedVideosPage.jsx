@@ -1,10 +1,14 @@
 import React, { useEffect, useState } from 'react'
 import { useLoadingContext } from '../contexts/loadingContext'
+import { useUserContext } from '../contexts/userContext'
+import { usePopUpContext } from '../contexts/popUpContext'
 import VideoCard1 from './VideoCard1'
 import PaginationCard from './PaginationCard'
 
 function LikedVideosPage() {
+  const {user} = useUserContext()
   const {loading, setLoading} = useLoadingContext()
+  const {setLoginPopUp} = usePopUpContext()
 
   const [videos, setVideos] = useState([])
   const [page, setPage] = useState(1)
@@ -23,6 +27,9 @@ function LikedVideosPage() {
         setVideos(res.data)
         console.log(res.data)
       }
+      else {
+        setLoginPopUp(true)
+      }
     })
     .catch((err) => console.log(err))
     .finally(() => setLoading(false))
@@ -31,6 +38,14 @@ function LikedVideosPage() {
   useEffect(() => {
     getLikedVideos()
   }, [])
+
+  if(!user?._id) {
+    return (
+      <div>
+        
+      </div>
+    )
+  }
 
   return (
     <div className='relative w-10/12 md:w-4/5 lg:w-2/3 flex flex-col gap-3 md:gap-5 mt-5 mb-14'>

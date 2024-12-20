@@ -6,12 +6,14 @@ import { faCircleQuestion, faMessage, faUser } from '@fortawesome/free-regular-s
 import ProfileMenuCard from './ProfileMenuCard';
 import { useThemeContext } from '../contexts/themeContext';
 import { useUserContext } from '../contexts/userContext';
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 
 function AccountPopUp() {
     const { account, setAccount } = usePopUpContext()
     const { theme } = useThemeContext()
     const { setUser } = useUserContext()
+
+    const location = useLocation()
 
     const logoutUser = async () => {
         const url = `${import.meta.env.VITE_BACKEND_URL}/users/logout`
@@ -23,6 +25,7 @@ function AccountPopUp() {
         fetch(url, options)
         .then((res) => res.json())
         .catch((err) => console.log(err))
+        .finally(() => window.location.reload())
     }
 
     if (account) return (

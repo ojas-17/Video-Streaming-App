@@ -4,14 +4,18 @@ import VideoCard1 from './VideoCard1'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faFilter } from '@fortawesome/free-solid-svg-icons';
 import { useThemeContext } from '../contexts/themeContext';
+import { useUserContext } from '../contexts/userContext';
 import { useLoadingContext } from '../contexts/loadingContext';
+import { usePopUpContext } from '../contexts/popUpContext';
 import PaginationCard from './PaginationCard'
 
 function HistoryPage() {
   const location = useLocation()
 
+  const {user} = useUserContext()
   const {theme} = useThemeContext()
   const {loading, setLoading} = useLoadingContext()
+  const {setLoginPopUp} = usePopUpContext()
   
   let query = ''
   const [videos, setVideos] = useState([])
@@ -43,10 +47,15 @@ function HistoryPage() {
     // console.log(url)
     fetch(url, options)
       .then((res) => res.json())
-      .then((res) => res.data)
-      .then((data) => {
-        setVideos(data)
-        console.log(data)
+      // .then((res) => res.data)
+      .then((res) => {
+        if(res.statusCode === 200) {
+          setVideos(res?.data)
+        }
+        else {
+          setLoginPopUp(true)
+        }
+        console.log(res?.data)
       })
       .catch((error) => {
         console.log(error)
@@ -71,6 +80,13 @@ function HistoryPage() {
     getVideo()
   }, [page])
 
+  if(!user?._id) {
+    return (
+      <div>
+
+      </div>
+    )
+  }
 
   return (
     <div className='relative w-10/12 md:w-4/5 lg:w-2/3 flex flex-col gap-3 md:gap-5 mt-5 mb-14'>

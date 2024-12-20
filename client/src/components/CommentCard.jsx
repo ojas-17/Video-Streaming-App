@@ -5,17 +5,18 @@ import { faHeart as heart1 } from '@fortawesome/free-solid-svg-icons';
 import { faHeart as heart2 } from '@fortawesome/free-regular-svg-icons';
 import { useUserContext } from '../contexts/userContext';
 import { useLoadingContext } from '../contexts/loadingContext';
+import { usePopUpContext } from '../contexts/popUpContext';
 
 function CommentCard({ comment, setLike, setCommentId }) {
   const { user } = useUserContext()
-  const { setLoginPopUp } = useLoadingContext()
+  const { setLoginPopUp } = usePopUpContext()
   
   const [likes, setLikes] = useState([])
   const [isLiked, setIsLiked] = useState(false)
   const likeIconRef = useRef()
 
   const getLikes = async () => {
-    const likeURL = `${import.meta.env.VITE_BACKEND_URL}/like/?commentId=${comment._id}&userId=${user?._id}`
+    const likeURL = user?._id ? `${import.meta.env.VITE_BACKEND_URL}/like/?commentId=${comment._id}&userId=${user?._id}` : `${import.meta.env.VITE_BACKEND_URL}/like/?commentId=${comment._id}`
     fetch(likeURL)
       .then((res) => res.json())
       .then((res) => {

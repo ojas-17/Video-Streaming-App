@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faBars, faMagnifyingGlass, faMoon } from '@fortawesome/free-solid-svg-icons';
 import { faSun } from '@fortawesome/free-regular-svg-icons';
@@ -59,6 +59,11 @@ function Header({ toggleSidebar }) {
   const toggleTheme = () => {
     setTheme((prev) => prev === 'light' ? 'dark' : 'light')
   }
+
+  useEffect(() => {
+    setLoginPopUp(false)
+    console.log(location)
+  }, [location])
 
   return (
     <div className=''>
@@ -285,7 +290,7 @@ function Header({ toggleSidebar }) {
       </div>
 
       {
-        loginPopUp && (
+        loginPopUp && (location.pathname.includes('/watch')) && (
           <div className='fixed w-full h-full left-0 top-0 z-20' onClick={() => setLoginPopUp(false)}>
 
           </div>
