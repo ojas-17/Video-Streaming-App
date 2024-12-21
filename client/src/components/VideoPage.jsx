@@ -225,7 +225,7 @@ function VideoPage() {
                 <div className='w-full'>
                     {
                         !videoNotFound ? !video?._id && (
-                            <div className='w-full aspect-[16/9] bg-neutral-900 rounded-[10px] flex justify-center items-center'>
+                            <div className={`w-full aspect-[16/9] ${theme === 'light' ? 'bg-neutral-400' : 'bg-neutral-900'} rounded-[10px] flex justify-center items-center`}>
                                 <img src={theme === 'light' ? loading1 : loading2} className='aspect-[1/1]' alt="" />
                             </div>
                         ) : (
