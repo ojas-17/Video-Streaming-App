@@ -493,12 +493,12 @@ function ChannelPage() {
 
                             {
                                 imagePreview2 && (
-                                    <img className='object-cover rounded-full aspect-[1/1] max-w-1/3' src={imagePreview2} alt="" />
+                                    <img className='object-cover border-2 lg:border-4 border-purple-600 rounded-full aspect-[1/1] max-w-1/3' src={imagePreview2} alt="" />
                                 )
                             }
                             {
                                 !imagePreview2 && userChannel?.avatar && (
-                                    <img className='object-cover rounded-full aspect-[1/1] max-w-1/3' src={userChannel?.avatar} alt="" />
+                                    <img className='object-cover border-2 lg:border-4 border-purple-600 rounded-full aspect-[1/1] max-w-1/3' src={userChannel?.avatar} alt="" />
                                 )
                             }
 
@@ -564,7 +564,12 @@ function ChannelPage() {
                 )
             }
 
-            <PaginationCard page={page} setPage={setPage} lastPage={videos.totalPages} />
+            {
+                videos.length && (
+                    <PaginationCard page={page} setPage={setPage} lastPage={videos.totalPages} />
+                )
+            }
+            
         </div>
     )
 }

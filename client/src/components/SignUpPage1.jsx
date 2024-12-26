@@ -216,7 +216,7 @@ function SignUpPage1() {
                       </span>
                     </span>
                   </div>
-                  <img className='aspect-[1/1] w-full h-full rounded-full' src={imagePreview} alt="" />
+                  <img className='aspect-[1/1] w-full h-full object-cover rounded-full' src={imagePreview} alt="" />
                 </label>
               )}
 

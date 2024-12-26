@@ -73,7 +73,7 @@ const registerUser = asyncHandler(async (req, res) => {
         fullName,
         password,
         avatar: avatar.url,
-        coverImage: coverImage?.url || ""
+        coverImage: coverImage?.url || "https://res.cloudinary.com/daz3h4k3g/image/upload/v1735216372/jrje1yefiww8fkb0itnq.png"
     });
 
     const createdUser = await User.findById(user._id).select(
@@ -639,9 +639,14 @@ const deleteUser = asyncHandler(async (req, res) => {
         }
 
         comments.map(async (comment) => {
+            const likes = await Like.deleteMany({ comment: new mongoose.Types.ObjectId(comment._id) });
+            if (!likes) {
+                throw new ApiError(500, "Error while deleting likes of comment of video");
+            }
+
             const deletedComment = await Comment.findByIdAndDelete(comment._id);
             if (!deletedComment) {
-                throw new ApiError(500, "Error while deleting comment");
+                throw new ApiError(500, "Error while deleting comment of video");
             }
         });
 
@@ -652,7 +657,7 @@ const deleteUser = asyncHandler(async (req, res) => {
     });
 
 
-    const likes = await Like.find({ owner: req.user._id });
+    const likes = await Like.find({ LikedBy: req.user._id });
     if (!likes) {
         throw new ApiError(500, "Error while deleting likes");
     }

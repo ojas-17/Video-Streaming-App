@@ -255,7 +255,7 @@ function AccountPage() {
 		.then((res) => res.json())
 		.then((res) => {
 			if (res.statusCode === 200) {
-				setUser(null)
+				setUser({})
 				navigate('/')
 			}
 			else {
@@ -454,7 +454,7 @@ function AccountPage() {
 									{/* <label className='text-sm md:text-base' htmlFor="">Enter Password</label> */}
 									<input
 										type="text"
-										className={`w-full p-2 rounded-lg text-lg md:text-xl focus:shadow-md focus:shadow-red-800 transition-shadow duration-200 placeholder-neutral-500 outline-none ${theme === 'light' ? 'bg-neutral-200' : 'bg-neutral-800'}`}
+										className={`w-full p-2 rounded-lg text-lg md:text-xl text-black focus:shadow-md focus:shadow-red-800 transition-shadow duration-200 placeholder-neutral-500 outline-none ${theme === 'light' ? 'bg-red-200' : 'bg-red-300'}`}
 										placeholder='Password'
 										value={password}
 										onChange={(e) => setPassword(e.target.value)}
