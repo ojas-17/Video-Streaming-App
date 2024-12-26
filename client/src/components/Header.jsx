@@ -244,7 +244,7 @@ function Header({ toggleSidebar }) {
           </div>
           <div>
             {
-              Object.keys(user).length !== 0 && (
+              user?._id && (
                 <div className='cursor-pointer min-w-10' onClick={() => {
                   setAccount((prev) => {
                     // console.log(prev)
@@ -290,7 +290,7 @@ function Header({ toggleSidebar }) {
       </div>
 
       {
-        loginPopUp && (location.pathname.includes('/watch')) && (
+        loginPopUp && (location.pathname.includes('/watch') || location.pathname.includes('/channel')) && (
           <div className='fixed w-full h-full left-0 top-0 z-20' onClick={() => setLoginPopUp(false)}>
 
           </div>

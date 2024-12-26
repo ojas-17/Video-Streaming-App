@@ -25,6 +25,9 @@ function AccountPage() {
 	const [image2, setImage2] = useState(null);
 	const [imagePreview2, setImagePreview2] = useState(null)
 
+	const [deleteButton, setDeleteButton] = useState(false)
+	const [password, setPassword] = useState('')
+
 	const handleImageChange1 = (event) => {
 		const file = event.target.files[0];
 
@@ -211,19 +214,77 @@ function AccountPage() {
 			.catch((err) => console.log(err))
 	}
 
-	useEffect(() => {
-		if (user?._id) {
-			setUsername(user.username)
-			setFullName(user.fullName)
+	const handleVerifyPassword = async () => {
+		const url = `${import.meta.env.VITE_BACKEND_URL}/users/verify-password`
+		const data = {
+			password
 		}
-		else {
-			setLoginPopUp(true)
+		const options = {
+			method: 'POST',
+			headers: {
+				'Content-Type': 'application/json',
+			},
+			body: JSON.stringify(data),
+			credentials: 'include'
+		}
+
+		fetch(url, options)
+			.then((res) => res.json())
+			.then((res) => {
+				if (res.statusCode === 200) {
+					setDeleteButton(true)
+				}
+				else {
+					setErrorMsg(res.message)
+					setTimeout(() => {
+						setErrorMsg('')
+					}, 2000);
+				}
+			})
+			.catch((err) => console.log(err))
+	}
+
+	const handleDeleteAccount = async () => {
+		const url = `${import.meta.env.VITE_BACKEND_URL}/users/delete-account`
+		const options = {
+			method: 'DELETE',
+			credentials: 'include'
+		}
+
+		fetch(url, options)
+		.then((res) => res.json())
+		.then((res) => {
+			if (res.statusCode === 200) {
+				setUser(null)
+				navigate('/')
+			}
+			else {
+				setErrorMsg(res.message)
+				setTimeout(() => {
+					setErrorMsg('')
+				}, 2000);
+			}
+		})
+		.catch((err) => console.log(err))
+	}
+
+
+	useEffect(() => {
+		if(!loading) {
+			if (user?._id) {
+				setLoginPopUp(false)
+				setUsername(user.username)
+				setFullName(user.fullName)
+			}
+			else {
+				setLoginPopUp(true)
+			}
 		}
 
 	}, [user])
 
 
-	if (!user?._id) {
+	if (!user?._id || loading) {
 		return (
 			<div>
 
@@ -375,6 +436,57 @@ function AccountPage() {
 					</div>
 
 
+				</AccountPageMenuItem>
+
+				<AccountPageMenuItem title={'Delete Account'} showButton={password || deleteButton} bgRed={true}>
+					<div className='my-5 flex flex-col gap-5'>
+						{
+							!deleteButton && (
+								<div className='text-xl'>
+									Verify your password to delete your account
+								</div>
+							)
+						}
+						
+						{
+							!deleteButton && (
+								<div className='flex flex-col gap-1'>
+									{/* <label className='text-sm md:text-base' htmlFor="">Enter Password</label> */}
+									<input
+										type="text"
+										className={`w-full p-2 rounded-lg text-lg md:text-xl focus:shadow-md focus:shadow-red-800 transition-shadow duration-200 placeholder-neutral-500 outline-none ${theme === 'light' ? 'bg-neutral-200' : 'bg-neutral-800'}`}
+										placeholder='Password'
+										value={password}
+										onChange={(e) => setPassword(e.target.value)}
+									/>
+								</div>
+							)
+						}
+
+						{
+							deleteButton && (
+								<div className='text-xl flex flex-col gap-1'>
+									Are you sure you wat to delete your account? This action cannot be undone.
+								</div>
+							)
+						}
+
+						{
+							!deleteButton && (
+								<div className='flex justify-center'>
+									<button className={`text-xl border-2 border-red-700 transition-colors duration-100 hover:bg-red-600 pb-2 pt-1 px-5 ${password ? '' : 'hidden'}`} onClick={handleVerifyPassword}>
+										Verify
+									</button>
+								</div>
+							)
+						}
+
+						<div className='flex justify-center'>
+							<button className={`text-xl border-2 border-red-700 transition-colors duration-100 hover:bg-red-600 pb-2 pt-1 px-3 ${deleteButton ? '' : 'hidden'}`} onClick={handleDeleteAccount}>
+								Delete
+							</button>
+						</div>
+					</div>
 				</AccountPageMenuItem>
 
 			</div>

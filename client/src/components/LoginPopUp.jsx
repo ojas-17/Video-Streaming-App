@@ -20,7 +20,7 @@ function LoginPopUp() {
             <div className='flex justify-between'>
                 <div className=' text-2xl'>Login Required</div>
                 {
-                    location.pathname.includes('/watch') && (
+                    (location.pathname.includes('/watch') || location.pathname.includes('/channel')) && (
                         <FontAwesomeIcon className=' cursor-pointer' icon={faXmark} size='2x' onClick={() => setLoginPopUp(false)} />
                     )
                 }

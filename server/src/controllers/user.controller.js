@@ -2,6 +2,9 @@ import mongoose from "mongoose";
 import { asyncHandler } from '../utils/asyncHandler.js';
 import { ApiError } from '../utils/ApiError.js';
 import { User } from '../models/user.model.js';
+import { Video } from '../models/video.model.js';
+import { Like } from '../models/like.model.js';
+import { Comment } from '../models/comment.model.js';
 import { Subscription } from '../models/subscription.model.js'
 import { uploadOnCloudinary } from '../utils/cloudinary.js';
 import { ApiResponse } from '../utils/ApiResponse.js'
@@ -157,6 +160,8 @@ const logoutUser = asyncHandler(async (req, res) => {
 
     const options = {
         httpOnly: true,
+        // secure: false,
+        // sameSite: 'lax'
         secure: true,
         sameSite: 'None'
     }
@@ -448,7 +453,7 @@ const checkSubscribed = asyncHandler(async (req, res) => {
     return res
         .status(200)
         .json(new ApiResponse(200, isSubscribed, "Subscription checked successfully"))
-})
+});
 
 const getWatchHistory = asyncHandler(async (req, res) => {
     const page = parseInt(req.query?.page) || 1;
@@ -592,6 +597,107 @@ const getWatchHistory = asyncHandler(async (req, res) => {
 
 });
 
+const verifyPassword = asyncHandler(async (req, res) => {
+    const { password } = req.body;
+
+    if (!password) {
+        throw new ApiError(400, "Password is required");
+    }
+
+    const user = await User.findById(req.user._id);
+
+    if (!user) {
+        throw new ApiError(404, "User not found");
+    }
+
+    const isPasswordValid = await user.isPasswordCorrect(password);
+
+    if (!isPasswordValid) {
+        throw new ApiError(400, "Invalid Password");
+    }
+
+    return res
+    .status(200)
+    .json(new ApiResponse(200, isPasswordValid, "Password verified successfully"));
+});
+
+const deleteUser = asyncHandler(async (req, res) => {
+    const videos = await Video.find({ owner: req.user._id });
+    if (!videos) {
+        throw new ApiError(404, "No videos found");
+    }
+
+    videos.map(async (video) => {
+        const likes = await Like.deleteMany({ video: new mongoose.Types.ObjectId(video._id) });
+        if (!likes) {
+            throw new ApiError(500, "Error while deleting likes of video");
+        }
+
+        const comments = await Comment.find({ video: new mongoose.Types.ObjectId(video._id) });
+        if (!comments) {
+            throw new ApiError(500, "Error while deleting comments of video");
+        }
+
+        comments.map(async (comment) => {
+            const deletedComment = await Comment.findByIdAndDelete(comment._id);
+            if (!deletedComment) {
+                throw new ApiError(500, "Error while deleting comment");
+            }
+        });
+
+        const deletedVideo = await Video.findByIdAndDelete(video._id);
+        if(!deletedVideo) {
+            throw new ApiError(500, "Error while deleting video");
+        }
+    });
+
+
+    const likes = await Like.find({ owner: req.user._id });
+    if (!likes) {
+        throw new ApiError(500, "Error while deleting likes");
+    }
+
+    likes.map(async (like) => {
+        const deletedLike = await Like.findByIdAndDelete(like._id);
+        if (!deletedLike) {
+            throw new ApiError(500, "Error while deleting like");
+        }
+    });
+
+
+    const comments = await Comment.find({ owner: req.user._id });
+    if(!comments) {
+        throw new ApiError(500, "Error while deleting comments");
+    }
+
+    comments.map(async (comment) => {
+        const deletedComment = await Comment.findByIdAndDelete(comment._id);
+        if (!deletedComment) {
+            throw new ApiError(500, "Error while deleting comment");
+        }
+    });
+
+
+    const deletedSubscriptions = await Subscription.deleteMany({
+        $or: [
+            { subscriber: req.user._id },
+            { channel: req.user._id }
+        ]
+    });
+    if(!deletedSubscriptions) {
+        throw new ApiError(500, "Error while deleting subscriptions");
+    }
+
+    const deletedUser = await User.findByIdAndDelete(req.user._id);
+    if(!deletedUser) {
+        throw new ApiError(500, "Error while deleting user");
+    }
+
+    return res
+        .status(200)
+        .json(new ApiResponse(200, deleteUser, "User deleted successfully"));
+});
+
 export {
     registerUser,
     loginUser,
@@ -604,5 +710,7 @@ export {
     updateUserCoverImage,
     getUserChannelProfile,
     checkSubscribed,
-    getWatchHistory
+    getWatchHistory,
+    verifyPassword,
+    deleteUser
 };

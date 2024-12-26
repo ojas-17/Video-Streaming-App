@@ -11,7 +11,9 @@ import {
     updateUserCoverImage,
     getUserChannelProfile,
     checkSubscribed,
-    getWatchHistory
+    getWatchHistory,
+    verifyPassword,
+    deleteUser
 } from '../controllers/user.controller.js'
 import {upload} from '../middlewares/multer.middleware.js'
 import {verifyJWT} from '../middlewares/auth.middleware.js'
@@ -46,5 +48,8 @@ router.route("/cover-image").patch(verifyJWT, upload.single("coverImage"), updat
 router.route("/c/:username").get(getUserChannelProfile);
 router.route("/c/issubscribed/:channelId").get(verifyJWT, checkSubscribed);
 router.route("/history").get(verifyJWT, getWatchHistory);
+
+router.route("/verify-password").post(verifyJWT, verifyPassword);
+router.route("/delete-account").delete(verifyJWT, deleteUser);
 
 export default router;
