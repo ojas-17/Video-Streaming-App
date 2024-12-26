@@ -8,6 +8,7 @@ import { useThemeContext } from '../contexts/themeContext';
 import { Link, NavLink } from 'react-router-dom';
 import SidebarMenuCard from './SidebarMenuCard';
 import { useUserContext } from '../contexts/userContext';
+import logo from '../assets/logo.png';
 
 function Sidebar({ sidebar, toggleSidebar }) {
 
@@ -21,7 +22,7 @@ function Sidebar({ sidebar, toggleSidebar }) {
     >
       <div className='w-full h-20 flex items-center justify-between px-5'>
         <Link to={"/"}>
-          <img className='aspect-auto w-20' src="http://res.cloudinary.com/daz3h4k3g/image/upload/v1731426491/d7a13o6gu1t8o7lfrfmw.png" alt="" />
+          <img className='aspect-auto w-20' src={logo} alt="" />
         </Link>
         <FontAwesomeIcon
           icon={faBars}

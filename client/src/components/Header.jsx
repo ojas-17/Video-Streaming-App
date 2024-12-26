@@ -13,6 +13,7 @@ import loading1 from '../assets/loading.gif'
 import loading2 from '../assets/loading2.gif'
 import { MdSunny } from "react-icons/md";
 import { IoSearch } from "react-icons/io5";
+import logo from '../assets/logo.png'
 
 
 function Header({ toggleSidebar }) {
@@ -93,7 +94,7 @@ function Header({ toggleSidebar }) {
             <FontAwesomeIcon icon={faBars} size='2x' />
           </div>
           <Link to={"/"}>
-            <img className='aspect-auto w-20' src="http://res.cloudinary.com/daz3h4k3g/image/upload/v1731426491/d7a13o6gu1t8o7lfrfmw.png" alt="" />
+            <img className='aspect-auto w-20' src={logo} alt="" />
           </Link>
         </div>
 
