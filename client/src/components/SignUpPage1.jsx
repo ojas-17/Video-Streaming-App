@@ -5,6 +5,7 @@ import { Link, useNavigate } from 'react-router-dom'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faMoon, faPenToSquare } from '@fortawesome/free-solid-svg-icons';
 import { MdSunny } from "react-icons/md";
+import logo from '../assets/logo.png'
 
 
 function SignUpPage1() {
@@ -181,10 +182,10 @@ function SignUpPage1() {
         {msg}
       </div>
 
-      <img className='aspect-auto w-60 hidden sm:block shadow-lg shadow-purple-500' src="http://res.cloudinary.com/daz3h4k3g/image/upload/v1731426491/d7a13o6gu1t8o7lfrfmw.png" alt="" />
+      <img className='aspect-auto w-60 hidden sm:block shadow-lg shadow-purple-500' src={logo} alt="" />
 
       <div className={`flex flex-col items-center sm:rounded-3xl shadow-xl shadow-purple-500 w-full sm:w-5/6 md:w-2/3 lg:w-5/6 xl:w-5/6 sm:h-full transition-colors duration-200 ${theme === 'light' ? 'bg-neutral-300' : 'bg-neutral-800'} ${theme === 'light' ? 'text-black' : 'text-white'} sm:px-10 py-20 sm:py-10 gap-12`}>
-        <img className='aspect-auto w-60 block sm:hidden shadow-lg shadow-purple-500' src="http://res.cloudinary.com/daz3h4k3g/image/upload/v1731426491/d7a13o6gu1t8o7lfrfmw.png" alt="" />
+        <img className='aspect-auto w-60 block sm:hidden shadow-lg shadow-purple-500' src={logo} alt="" />
         <form onSubmit={handleSubmit} className='w-10/12 sm:w-full flex flex-col items-center gap-12'>
           <h1 className='text-4xl'>Sign Up</h1>
 

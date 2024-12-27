@@ -95,7 +95,7 @@ function HistoryPage() {
       </div>
 
       {
-        videos.length && !videos?.watchHistory?.length && (
+        videos.length !== 0 && videos?.watchHistory?.length == 0 && (
           <div className='text-3xl w-full flex justify-center mt-10'>
             No videos found
           </div>
@@ -103,7 +103,7 @@ function HistoryPage() {
       }
 
       {
-        videos.watchHistory?.length && videos.watchHistory?.map((video, index) => {
+        videos.watchHistory?.length > 0 && videos.watchHistory?.map((video, index) => {
           return (
             <VideoCard1 video={video} key={index} />
           )
@@ -111,7 +111,7 @@ function HistoryPage() {
       }
 
       {
-        videos.watchHistory?.length && (
+        videos.watchHistory?.length > 0 && (
           <PaginationCard page={page} setPage={setPage} lastPage={videos.totalPages} />
         )
       }

@@ -3,6 +3,7 @@ import {ApiError} from '../utils/ApiError.js';
 import {ApiResponse} from '../utils/ApiResponse.js'
 import {Comment} from '../models/comment.model.js';
 import {Video} from '../models/video.model.js';
+import {Like} from '../models/like.model.js';
 
 const postComment = asyncHandler(async (req, res) => {
     const videoId = req.params?.videoId;
@@ -169,7 +170,12 @@ const deleteComment = asyncHandler(async (req, res) => {
         throw new ApiError(401, "Only owner can delete comment");
     }
 
-    const deletedComment = await Comment.deleteOne({_id: commentId});
+    const likes = await Like.deleteMany({comment: comment._id});
+    if(!likes) {
+        throw new ApiError(500, "Something went wrong while deleting the likes of comment");
+    }
+
+    const deletedComment = await Comment.deleteOne({_id: comment._id});
     if(!deletedComment) {
         throw new ApiError(500, "Something went wrong while deleting the comment");
     }

@@ -58,7 +58,7 @@ function SubscriptionsPage() {
       </div>
 
       {
-        subscriptions.length && !subscriptions?.subscriptions?.length && (
+        subscriptions.length !== 0 && subscriptions?.subscriptions?.length == 0 && (
           <div className='text-3xl w-full flex justify-center mt-10'>
             No videos found
           </div>
@@ -66,7 +66,7 @@ function SubscriptionsPage() {
       }
 
       {
-        subscriptions?.subscriptions?.length && subscriptions?.subscriptions?.map((user) => {
+        subscriptions?.subscriptions?.length > 0 && subscriptions?.subscriptions?.map((user) => {
           return (
             <SubscriptionsCard channel={user?.channel} key={user?._id} />
           )
@@ -74,7 +74,7 @@ function SubscriptionsPage() {
       }
 
       {
-        subscriptions?.subscriptions?.length && (
+        subscriptions?.subscriptions?.length > 0 && (
           <PaginationCard page={page} setPage={setPage} lastPage={subscriptions.totalPages} />
         )
       }

@@ -54,7 +54,7 @@ function LikedVideosPage() {
       </div>
 
       {
-        videos.length && !videos?.videos?.length && (
+        videos.length !== 0 && videos?.videos?.length == 0 && (
           <div className='text-3xl w-full flex justify-center mt-10'>
             No videos found
           </div>
@@ -62,7 +62,7 @@ function LikedVideosPage() {
       }
 
       {
-        videos.videos?.length && videos.videos?.map((video, index) => {
+        videos.videos?.length > 0 && videos.videos?.map((video, index) => {
           return (
             <VideoCard1 video={video?.video} key={video._id} />
           )
@@ -70,7 +70,7 @@ function LikedVideosPage() {
       }
 
       {
-        videos.videos?.length && (
+        videos.videos?.length > 0 && (
           <PaginationCard page={page} setPage={setPage} lastPage={videos.totalPages} />
         )
       }
