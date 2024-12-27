@@ -5,7 +5,7 @@ import { Link, useNavigate } from 'react-router-dom'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faMoon } from '@fortawesome/free-solid-svg-icons';
 import { MdSunny } from "react-icons/md";
-
+import logo from '../assets/logo.png';
 
 function LoginPage() {
   const [username, setUsername] = useState('')
@@ -106,7 +106,7 @@ function LoginPage() {
         {error}
       </div>
 
-      <img className='aspect-auto w-60 hidden sm:block shadow-lg shadow-purple-500' src="http://res.cloudinary.com/daz3h4k3g/image/upload/v1731426491/d7a13o6gu1t8o7lfrfmw.png" alt="" />
+      <img className='aspect-auto w-60 hidden sm:block shadow-lg shadow-purple-500' src={logo} alt="" />
 
       <div className={`flex flex-col items-center sm:rounded-3xl shadow-xl shadow-purple-500 w-full sm:w-5/6 md:w-2/3 lg:w-1/2 xl:w-1/3 h-screen sm:h-full transition-colors duration-200 ${theme === 'light' ? 'bg-neutral-300' : 'bg-neutral-800'} ${theme === 'light' ? 'text-black' : 'text-white'} sm:px-10 py-20 sm:py-10 gap-12`}>
         <img className='aspect-auto w-60 block sm:hidden shadow-lg shadow-purple-500' src="http://res.cloudinary.com/daz3h4k3g/image/upload/v1731426491/d7a13o6gu1t8o7lfrfmw.png" alt="" />
