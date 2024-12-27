@@ -9,7 +9,7 @@ app.use(express.urlencoded({extended: true, limit: "16kb"}))
 app.use(express.static("public"))
 app.use(cookieParser());
 app.use(cors({
-    origin: ['http://localhost:5173'],
+    origin: ['https://video-streaming-app-frontend-cyan.vercel.app'],
     credentials: true,
     // exposedHeaders: ["Set-Cookie"]
 }));
