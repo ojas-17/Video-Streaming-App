@@ -63,20 +63,21 @@ function VideoCard3({ video, userChannel, openUpdatePopUp, openDeletePopUp }) {
                 onMouseLeave={() => setIsHovered(false)}
             >
                 <div className='relative text-2xl flex justify-between'>
-                    <Link className='transition-colors duration-150' to={`/watch/${video._id}`}>
+                    <Link className='transition-colors duration-150 overflow-hidden whitespace-nowrap text-ellipsis' to={`/watch/${video._id}`}>
                         {video.title}
                     </Link>
                     {
-                        user?._id && userChannel?._id && (user?._id === userChannel?._id) && (
+                        user?._id && userChannel?._id && (user?._id === userChannel?._id) && isHovered && (
                             <div
                                 className={`${isHovered ? 'cursor-pointer' : ''} flex justify-center items-center rounded-full aspect-[1/1] h-full transition-colors duration-100   ${isHovered ? theme === 'light' ? 'hover:bg-neutral-400' : 'hover:bg-neutral-900' : ''}`}
                                 onClick={() => setVideoOptions(true)}
                             >
                                 {/* <FontAwesomeIcon icon={faEllipsisVertical} /> */}
+                                <TbDotsVertical />
                                 {
-                                    isHovered && (
-                                        <TbDotsVertical />
-                                    )
+                                    // isHovered && (
+                                    //     <TbDotsVertical />
+                                    // )
                                 }
                             </div>
                         )

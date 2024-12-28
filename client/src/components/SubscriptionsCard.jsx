@@ -49,12 +49,12 @@ function SubscriptionsCard({ channel }) {
 
     return (
         <div className='w-full flex justify-between'>
-            <Link to={`/channel/${channel?.username}`} className='flex gap-5 lg:gap-10'>
+            <Link to={`/channel/${channel?.username}`} className='flex gap-5 lg:gap-10 overflow-hidden'>
                 <div className='w-16 sm:w-28 lg:w-40'>
                     <img className='w-full aspect-square object-cover rounded-full border-2 lg:border-4 border-purple-600' src={channel?.avatar} alt="" />
                 </div>
 
-                <div className='flex items-center text-xl sm:text-2xl lg:text-4xl'>
+                <div className='w-2/3 flex items-center text-xl sm:text-2xl lg:text-4xl overflow-hidden whitespace-nowrap text-ellipsis'>
                     {channel?.username}
                 </div>
             </Link>

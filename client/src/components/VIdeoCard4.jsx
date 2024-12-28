@@ -22,9 +22,9 @@ function VideoCard4({video}) {
             <div className='absolute z-0 top-0 left-0 w-full rounded-xl bg-purple-800' style={{aspectRatio: 16/9}}></div>
         </Link>
 
-        <div className=' flex flex-col gap-1 px-2'>
-            <div className='text-2xl'>
-                <Link className='transition-colors duration-150' to={`/watch/${video._id}`}>
+        <div className='w-full flex flex-col gap-1 px-2'>
+            <div className='w-full text-2xl overflow-hidden whitespace-nowrap text-ellipsis'>
+                <Link className='w-full transition-colors duration-150' to={`/watch/${video._id}`}>
                     {video.title}
                 </Link>
             </div>

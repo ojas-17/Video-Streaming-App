@@ -1,5 +1,6 @@
 import {v2 as cloudinary} from "cloudinary";
 import fs from "fs";
+import streamifier from 'streamifier';
 
 cloudinary.config({ 
     cloud_name: process.env.CLOUDINARY_CLOUD_NAME, 
@@ -7,21 +8,46 @@ cloudinary.config({
     api_secret: process.env.CLOUDINARY_API_SECRET // Click 'View API Keys' above to copy your API secret
 });
 
-const uploadOnCloudinary = async (localFilePath) => {
+// const uploadOnCloudinary = async (localFilePath) => {
+//     try {
+//         if(!localFilePath)
+//             return null;
+//         const response = await cloudinary.uploader.upload(localFilePath, {
+//             resource_type: "auto"
+//         });
+//         // console.log("File uploaded on cloudinary successfully", response.url);
+//         fs.unlinkSync(localFilePath);
+//         return response;
+//     } catch (error) {
+//         fs.unlinkSync(localFilePath);
+//         return null;
+//     }
+// }
+
+const uploadOnCloudinary = async (fileBuffer) => {
     try {
-        if(!localFilePath)
-            return null;
-        const response = await cloudinary.uploader.upload(localFilePath, {
-            resource_type: "auto"
+        if (!fileBuffer) return null;
+
+        return new Promise((resolve, reject) => {
+            // Create a readable stream from the buffer
+            const uploadStream = cloudinary.uploader.upload_stream(
+                { resource_type: 'auto' }, // Cloudinary automatically detects the file type (image, video, etc.)
+                (error, result) => {
+                    if (error) {
+                        reject(new Error('Cloudinary upload failed'));
+                    }
+                    resolve(result); // Resolve the promise with the result from Cloudinary
+                }
+            );
+
+            // Convert the buffer into a readable stream and pipe it to Cloudinary
+            streamifier.createReadStream(fileBuffer).pipe(uploadStream);
         });
-        // console.log("File uploaded on cloudinary successfully", response.url);
-        fs.unlinkSync(localFilePath);
-        return response;
     } catch (error) {
-        fs.unlinkSync(localFilePath);
+        console.error('Error uploading to Cloudinary:', error);
         return null;
     }
-}
+};
 
 const getPublicIdFromUrl = (url) => {
     try {

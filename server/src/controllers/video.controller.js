@@ -25,12 +25,12 @@ const uploadVideo = asyncHandler(async (req, res) => {
         throw new ApiError(400, "Description is required");
     }
     
-    const videoFileLocalPath = req.files?.videoFile?.[0]?.path;
+    const videoFileLocalPath = req.files?.videoFile?.[0]?.buffer;
     if(!videoFileLocalPath) {
         throw new ApiError(400, "Video file is required");
     }
 
-    const thumbnailLocalPath = req.files?.thumbnail?.[0]?.path;
+    const thumbnailLocalPath = req.files?.thumbnail?.[0]?.buffer;
     if(!thumbnailLocalPath) {
         throw new ApiError(400, "Thumbnail is required");
     }
@@ -243,7 +243,7 @@ const updateVideo = asyncHandler(async (req, res) => {
     }
 
     const {title, description} = req.body;
-    const thumbnailLocalPath = req.file?.path;
+    const thumbnailLocalPath = req.file?.buffer;
     // console.log(req.file.path);
     // console.log(req.body);
     if(!title && !description && !thumbnailLocalPath) {

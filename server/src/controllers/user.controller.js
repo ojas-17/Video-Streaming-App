@@ -48,8 +48,8 @@ const registerUser = asyncHandler(async (req, res) => {
 
     // console.log(req.files);
 
-    const avatarLocalPath = req.files?.avatar?.[0]?.path;
-    const coverImageLocalPath = req.files?.coverImage?.[0]?.path;
+    const avatarLocalPath = req.files?.avatar?.[0]?.buffer;
+    const coverImageLocalPath = req.files?.coverImage?.[0]?.buffer;
 
     // let coverImageLocalPath;
     // if (req.files && Array.isArray(req.files.coverImage) && req.files.coverImage.length > 0) {
@@ -290,7 +290,7 @@ const updateAccountDetails = asyncHandler(async (req, res) => {
 });
 
 const updateUserAvatar = asyncHandler(async (req, res) => {
-    const avatarLocalPath = req.file?.path;
+    const avatarLocalPath = req.file?.buffer;
     if (!avatarLocalPath) {
         throw new ApiError(400, "Avatar file is missing");
     }
@@ -316,7 +316,7 @@ const updateUserAvatar = asyncHandler(async (req, res) => {
 });
 
 const updateUserCoverImage = asyncHandler(async (req, res) => {
-    const coverImageLocalPath = req.file?.path;
+    const coverImageLocalPath = req.file?.buffer;
     if (!coverImageLocalPath) {
         throw new ApiError(400, "Cover Image file is missing");
     }

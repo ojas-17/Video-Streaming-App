@@ -565,7 +565,7 @@ function ChannelPage() {
             }
 
             {
-                videos.length && (
+                videos.length !== 0 && (
                     <PaginationCard page={page} setPage={setPage} lastPage={videos.totalPages} />
                 )
             }
