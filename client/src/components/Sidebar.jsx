@@ -56,7 +56,7 @@ function Sidebar({ sidebar, toggleSidebar }) {
         <SidebarMenuCard to={`${user?.username ? `/channel/${user.username}` : '/login'}`}>
           {/* <FontAwesomeIcon icon={faRectangleList} /> */}
           <FaRegRectangleList size='24'/>
-          <span>Your Channel</span>
+          <span>My Channel</span>
         </SidebarMenuCard>
 
         <div className={`w-full h-px mt-4 mb-2 ${theme === 'light' ? 'bg-black' : 'bg-white'}`}></div>

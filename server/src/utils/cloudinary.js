@@ -54,6 +54,7 @@ const getPublicIdFromUrl = (url) => {
         const regex = /\/v[0-9]+\/(.*)\..+/;
         const match = url.match(regex);
         if (match && match[1]) {
+            // console.log(match[1])
             return match[1]; // The public_id is captured in match[1]
         }
         return null; // If no public_id is found
@@ -64,19 +65,22 @@ const getPublicIdFromUrl = (url) => {
 }
 
 
-const deleteFromCloudinary = async (fileURL) => {
+const deleteFromCloudinary = async (fileURL, resourceType = 'image') => {
     const publicId = getPublicIdFromUrl(fileURL);
     try {
         if (!publicId) {
             return null;
         }
 
-        const response = await cloudinary.uploader.destroy(publicId);
+        const response = await cloudinary.uploader.destroy(publicId, {
+            resource_type: resourceType
+        });
         if (response.result === "ok") {
             console.log("File deleted successfully from Cloudinary");
             return true;
         } else {
             console.log("Error deleting file from Cloudinary");
+            console.log(response);
             return false;
         }
     } catch (error) {
@@ -87,5 +91,6 @@ const deleteFromCloudinary = async (fileURL) => {
 
 export {
     uploadOnCloudinary,
+    getPublicIdFromUrl,
     deleteFromCloudinary
 };
