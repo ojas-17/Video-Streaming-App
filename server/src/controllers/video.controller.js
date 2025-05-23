@@ -10,7 +10,7 @@ import {uploadOnCloudinary} from '../utils/cloudinary.js';
 import jwt from 'jsonwebtoken'
 
 const uploadVideo = asyncHandler(async (req, res) => {
-    const {title, description} = req.body;
+    const {title, description, videoUrl, videoDuration} = req.body;
 
     const user = await User.findById(req.user?._id);
     if(!user) {
@@ -24,31 +24,39 @@ const uploadVideo = asyncHandler(async (req, res) => {
     if(!description) {
         throw new ApiError(400, "Description is required");
     }
-    
-    const videoFileLocalPath = req.files?.videoFile?.[0]?.buffer;
-    if(!videoFileLocalPath) {
-        throw new ApiError(400, "Video file is required");
+
+    if(!videoUrl) {
+        throw new ApiError(400, "Video Url is required");
     }
+
+    if(!videoDuration) {
+        throw new ApiError(400, "Video Duration is required");
+    }
+    
+    // const videoFileLocalPath = req.files?.videoFile?.[0]?.buffer;
+    // if(!videoFileLocalPath) {
+    //     throw new ApiError(400, "Video file is required");
+    // }
 
     const thumbnailLocalPath = req.files?.thumbnail?.[0]?.buffer;
     if(!thumbnailLocalPath) {
         throw new ApiError(400, "Thumbnail is required");
     }
 
-    const videoFile = await uploadOnCloudinary(videoFileLocalPath);
+    // const videoFile = await uploadOnCloudinary(videoFileLocalPath);
     // console.log(videoFile);
     const thumbnail = await uploadOnCloudinary(thumbnailLocalPath);
 
-    if(!videoFile || !thumbnail) {
+    if(!thumbnail) {
         throw new ApiError(500, "Something went wrong while uploading to cloudinary");
     }
 
     const video = await Video.create({
-        videoFile: videoFile?.url,
+        videoFile: videoUrl,
         thumbnail: thumbnail?.url,
         title,
         description,
-        duration: videoFile?.duration,
+        duration: videoDuration,
         isPublished: false,
         owner: user._id
     });

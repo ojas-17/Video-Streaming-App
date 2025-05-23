@@ -59,6 +59,23 @@ function UploadPage() {
         }
     }
 
+    const UploadToCloudinary = async (file) => {
+        const formData = new FormData();
+        formData.append('file', file);
+        formData.append('upload_preset', 'frontend_unsigned_upload_preset');
+
+        try {
+            const response = await fetch('https://api.cloudinary.com/v1_1/daz3h4k3g/auto/upload', {
+                method: 'POST',
+                body: formData,
+            });
+            const data = await response.json();
+            console.log('Uploaded file metadata:', data);
+            return data;
+        } catch (error) {
+            console.error('Upload error:', error);
+        }
+    };
 
     const handleUpload = async () => {
         if(!video) {
@@ -90,8 +107,12 @@ function UploadPage() {
             setLoading(true)
             
             const url = `${import.meta.env.VITE_BACKEND_URL}/video/upload`
+            
+            const uploadedVideo = await UploadToCloudinary(video)
+            
             const formData = new FormData()
-            formData.append('videoFile', video)
+            formData.append('videoUrl', uploadedVideo.secure_url)
+            formData.append('videoDuration', uploadedVideo.duration)
             formData.append('thumbnail', image)
             formData.append('title', title)
             formData.append('description', description)
