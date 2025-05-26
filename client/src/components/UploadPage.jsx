@@ -6,6 +6,8 @@ import { faPenToSquare } from '@fortawesome/free-solid-svg-icons';
 import VideoPlayer from './VideoPlayer';
 import { useNavigate } from 'react-router-dom';
 import { useUserContext } from '../contexts/userContext';
+import loading1 from '../assets/loading.gif'
+import loading2 from '../assets/loading2.gif'
 
 function UploadPage() {
     const { theme } = useThemeContext()
@@ -36,6 +38,8 @@ function UploadPage() {
 
     const [video, setVideo] = useState(null)
     const [videoPreview, setVideoPreview] = useState(null)
+    const [showUploadProgress, setShowUploadProgress] = useState(false)
+    const [uploadProgress, setUploadProgress] = useState(0)
 
     const videoJsOptions = {
         autoplay: true,
@@ -59,44 +63,85 @@ function UploadPage() {
         }
     }
 
-    const UploadToCloudinary = async (file) => {
-        const formData = new FormData();
-        formData.append('file', file);
-        formData.append('upload_preset', 'frontend_unsigned_upload_preset');
+    // const UploadToCloudinary = async (file) => {
+    //     const formData = new FormData();
+    //     formData.append('file', file);
+    //     formData.append('upload_preset', 'frontend_unsigned_upload_preset');
 
-        try {
-            const response = await fetch('https://api.cloudinary.com/v1_1/daz3h4k3g/auto/upload', {
-                method: 'POST',
-                body: formData,
-            });
-            const data = await response.json();
-            console.log('Uploaded file metadata:', data);
-            return data;
-        } catch (error) {
-            console.error('Upload error:', error);
-        }
+    //     try {
+    //         const response = await fetch('https://api.cloudinary.com/v1_1/daz3h4k3g/auto/upload', {
+    //             method: 'POST',
+    //             body: formData,
+    //         });
+    //         const data = await response.json();
+    //         console.log('Uploaded file metadata:', data);
+    //         return data;
+    //     } catch (error) {
+    //         console.error('Upload error:', error);
+    //     }
+    // };
+
+    const UploadToCloudinary = (file) => {
+        return new Promise((resolve, reject) => {
+            setShowUploadProgress(true)
+
+            const formData = new FormData();
+            formData.append('file', file);
+            formData.append('upload_preset', 'frontend_unsigned_upload_preset');
+
+            const xhr = new XMLHttpRequest();
+            xhr.open('POST', 'https://api.cloudinary.com/v1_1/daz3h4k3g/auto/upload');
+
+            xhr.upload.onprogress = (event) => {
+                if (event.lengthComputable) {
+                    const percent = Math.round((event.loaded / event.total) * 100);
+                    // if((percent >= 0) && (percent <= 100)) {
+                    //     setUploadProgress(percent)
+                    // }
+                    setUploadProgress(percent)
+                    console.log(`Upload progress: ${percent}%`);
+                }
+            };
+
+            xhr.onload = () => {
+                if (xhr.status === 200) {
+                    const data = JSON.parse(xhr.responseText);
+                    console.log('Uploaded file metadata:', data);
+                    setShowUploadProgress(false)
+                    resolve(data);
+                } else {
+                    setShowUploadProgress(false)
+                    reject(new Error(`Upload failed with status ${xhr.status}`));
+                }
+            };
+
+            xhr.onerror = () => reject(new Error('Network error during upload'));
+
+            xhr.send(formData);
+        });
     };
 
+
     const handleUpload = async () => {
-        if(!video) {
+        if (!video) {
             setErrorMsg('Video File is required')
             setTimeout(() => {
                 setErrorMsg('')
             }, 2000);
         }
-        else if(!image) {
+        else if (!image) {
             setErrorMsg('Thumbnail File is required')
             setTimeout(() => {
                 setErrorMsg('')
             }, 2000);
         }
-        else if(!title) {
+        else if (!title) {
             setErrorMsg('Title is required')
             setTimeout(() => {
                 setErrorMsg('')
             }, 2000);
         }
-        else if(!description) {
+        else if (!description) {
             setErrorMsg('Description is required')
             setTimeout(() => {
                 setErrorMsg('')
@@ -104,12 +149,12 @@ function UploadPage() {
         }
 
         else {
-            setLoading(true)
-            
             const url = `${import.meta.env.VITE_BACKEND_URL}/video/upload`
-            
+
             const uploadedVideo = await UploadToCloudinary(video)
-            
+
+            setLoading(true)
+
             const formData = new FormData()
             formData.append('videoUrl', uploadedVideo.secure_url)
             formData.append('videoDuration', uploadedVideo.duration)
@@ -124,27 +169,27 @@ function UploadPage() {
             }
 
             fetch(url, options)
-            .then((res) => res.json())
-            .then((res) => {
-                // console.log(res)
-                if(res.statusCode === 201) {
-                    setMsg(res.message)
-                    if(user?._id) {
-                        navigate(`/channel/${user?.username}`)
+                .then((res) => res.json())
+                .then((res) => {
+                    // console.log(res)
+                    if (res.statusCode === 201) {
+                        setMsg(res.message)
+                        if (user?._id) {
+                            navigate(`/channel/${user?.username}`)
+                        }
+                        setTimeout(() => {
+                            setMsg('')
+                        }, 2000);
                     }
-                    setTimeout(() => {
-                        setMsg('')
-                    }, 2000);
-                }
-                else {
-                    setErrorMsg(res.message)
-                    setTimeout(() => {
-                        setErrorMsg('')
-                    }, 2000);
-                }
-            })
-            .catch((err) => console.log(err))
-            .finally(() => setLoading(false))
+                    else {
+                        setErrorMsg(res.message)
+                        setTimeout(() => {
+                            setErrorMsg('')
+                        }, 2000);
+                    }
+                })
+                .catch((err) => console.log(err))
+                .finally(() => setLoading(false))
 
             // setMsg('Success')
             // setTimeout(() => {
@@ -163,6 +208,42 @@ function UploadPage() {
             {
                 loading && (
                     <div className='fixed z-10 top-0 left-0 w-full h-screen bg-black opacity-30'></div>
+                )
+            }
+
+            {
+                showUploadProgress && (
+                    <div className='fixed flex flex-col justify-center items-center gap-2 z-10 top-0 left-0 w-full h-screen'>
+                        <div className='absolute top-0 left-0 w-full h-screen bg-black opacity-30'></div>
+
+                        <div className='z-20 text-2xl flex justify-center items-center gap-2'>
+                            <img src={theme === 'light' ? loading1 : loading2} className='aspect-[1/1]' style={{width: '30px'}} alt="" />
+                            <div> Uploading ({uploadProgress}%) </div>
+                        </div>
+                        <div className='w-3/4 sm:w-1/2 lg:w-1/3 xl:w-1/4 z-20'>
+                            <div className='w-full h-10 border-2 border-purple-700 rounded-full overflow-hidden'>
+                                <div className='h-full bg-gradient-to-r from-purple-500 to-blue-600 rounded-full transition-all duration-300' style={{width: `${uploadProgress}%`}}>
+
+                                </div>
+                            </div>
+
+                            {/* <div className="w-full h-10 border-2 border-purple-700 rounded-full overflow-hidden relative bg-transparent">
+                                <div
+                                    className="absolute top-0 left-0 h-full w-full bg-gradient-to-r from-purple-500 to-blue-600"
+                                    style={{
+                                        maskImage: `linear-gradient(to right, black ${uploadProgress}%, transparent ${uploadProgress}%)`,
+                                        WebkitMaskImage: `linear-gradient(to right, black ${uploadProgress}%, transparent ${uploadProgress}%)`,
+                                        maskRepeat: 'no-repeat',
+                                        WebkitMaskRepeat: 'no-repeat',
+                                        maskSize: '100% 100%',
+                                        WebkitMaskSize: '100% 100%',
+                                        borderRadius: '9999px' // Force the mask to be rounded as well
+                                    }}
+                                />
+                            </div> */}
+
+                        </div>
+                    </div>
                 )
             }
 

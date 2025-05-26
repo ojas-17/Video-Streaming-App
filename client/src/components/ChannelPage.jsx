@@ -84,6 +84,8 @@ function ChannelPage() {
     }
 
     const handleUpdateVideo = async () => {
+        setLoading(true)
+
         const url = `${import.meta.env.VITE_BACKEND_URL}/video/${videoId}`
         const formData = new FormData()
         formData.append('thumbnail', image)
@@ -111,11 +113,18 @@ function ChannelPage() {
                         setErrorMsg('')
                     }, 2000);
                 }
+
+                setLoading(false)
             })
-            .catch((err) => console.log(err))
+            .catch((err) => {
+                console.log(err)
+                setLoading(false)
+            })
     }
 
     const handleDeleteVideo = async () => {
+        setLoading(true)
+
         const url = `${import.meta.env.VITE_BACKEND_URL}/video/${videoId}`
         const options = {
             method: 'DELETE',
@@ -139,8 +148,13 @@ function ChannelPage() {
                         setErrorMsg('')
                     }, 2000);
                 }
+
+                setLoading(false)
             })
-            .catch((err) => console.log(err))
+            .catch((err) => {
+                console.log(err)
+                setLoading(false)
+            })
     }
 
     const handleImageChange1 = (event) => {
@@ -297,7 +311,7 @@ function ChannelPage() {
 
     if (loading) return (
         <div>
-            
+
         </div>
     )
 
@@ -539,8 +553,18 @@ function ChannelPage() {
                     <div className='px-5 flex flex-col gap-5'>
                         <div className='flex justify-between'>
                             <div className='flex gap-2 sm:gap-5'>
-                                <button className={`text-sm sm:text-xl px-2 sm:px-5 py-2 sm:py-3 rounded-lg ${sortBy === 'createdAt' ? 'text-purple-600' : ''} ${sortBy === 'createdAt' ? theme === 'light' ? 'bg-neutral-400' : 'bg-neutral-900' : theme === 'light' ? 'bg-neutral-300' : 'bg-neutral-700'}`} onClick={() => setSortBy('createdAt')}>Latest</button>
-                                <button className={`text-sm sm:text-xl px-2 sm:px-5 py-2 sm:py-3 rounded-lg ${sortBy === 'views' ? 'text-purple-600' : ''} ${sortBy === 'views' ? theme === 'light' ? 'bg-neutral-400' : 'bg-neutral-900' : theme === 'light' ? 'bg-neutral-300' : 'bg-neutral-700'}`} onClick={() => setSortBy('views')}>Popular</button>
+                                {
+                                    (videos?.videos?.length > 0) && (
+                                        <button className={`text-sm sm:text-xl px-2 sm:px-5 py-2 sm:py-3 rounded-lg ${sortBy === 'createdAt' ? 'text-purple-600' : ''} ${sortBy === 'createdAt' ? theme === 'light' ? 'bg-neutral-400' : 'bg-neutral-900' : theme === 'light' ? 'bg-neutral-300' : 'bg-neutral-700'}`} onClick={() => setSortBy('createdAt')}>Latest</button>
+                                    )
+                                }
+
+                                {
+                                    (videos?.videos?.length > 0) && (
+                                        <button className={`text-sm sm:text-xl px-2 sm:px-5 py-2 sm:py-3 rounded-lg ${sortBy === 'views' ? 'text-purple-600' : ''} ${sortBy === 'views' ? theme === 'light' ? 'bg-neutral-400' : 'bg-neutral-900' : theme === 'light' ? 'bg-neutral-300' : 'bg-neutral-700'}`} onClick={() => setSortBy('views')}>Popular</button>
+
+                                    )
+                                }
                             </div>
                             {
                                 user?._id && userChannel?._id && (user?._id === userChannel?._id) && (
@@ -565,11 +589,19 @@ function ChannelPage() {
             }
 
             {
-                videos.length !== 0 && (
+                videos?.videos?.length > 0 && (
                     <PaginationCard page={page} setPage={setPage} lastPage={videos.totalPages} />
                 )
             }
-            
+
+            {
+                videos?.videos?.length === 0 && (
+                    <div className='w-full flex justify-center my-8 text-2xl'>
+                        No Videos Found
+                    </div>
+                )
+            }
+
         </div>
     )
 }
